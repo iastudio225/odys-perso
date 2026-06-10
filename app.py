@@ -3,7 +3,6 @@ from routes.widget_routes import router as widget_router
 import mimetypes
 import os
 
-app.include_router(widget_router)
 
 def register_static_mime_types() -> None:
     """Force stable JS module MIME types across platforms.
@@ -86,6 +85,7 @@ app = FastAPI(
     version="1.0.0",
 )
 
+
 # ========= CORS =========
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost,http://127.0.0.1").split(",")
 app.add_middleware(
@@ -108,6 +108,12 @@ app.add_middleware(
 
 # ========= SECURITY HEADERS MIDDLEWARE =========
 app.add_middleware(SecurityHeadersMiddleware)
+
+
+# Widget Agent Commercial
+from routes.widget_routes import router as widget_router
+app.include_router(widget_router)
+
 
 
 # ========= REQUEST TIMEOUT (FALLBACK FOR HUNG HANDLERS) =========
