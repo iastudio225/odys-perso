@@ -1,7 +1,9 @@
 # app.py — slim orchestrator
+from routes.widget_routes import router as widget_router
 import mimetypes
 import os
 
+app.include_router(widget_router)
 
 def register_static_mime_types() -> None:
     """Force stable JS module MIME types across platforms.
