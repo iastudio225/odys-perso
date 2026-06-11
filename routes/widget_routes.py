@@ -3,7 +3,7 @@ Widget Chat API - Agent Commercial IA
 Endpoint pour intégrer l'agent Odysseus sur des sites web clients
 """
 
-from fastapi import APIRouter, HTTPException, BackgroundTasks
+from fastapi import APIRouter, HTTPException, BackgroundTasks, Request 
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
 from datetime import datetime
