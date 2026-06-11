@@ -1,0 +1,735 @@
+/**
+ * Odysseus Widget Pro v2.0 - Styles
+ * Production-ready, responsive, accessible
+ */
+
+/* ============================================
+   VARIABLES CSS (personnalisation par client)
+   ============================================ */
+:root {
+    --odysseus-primary: #667eea;
+    --odysseus-primary-dark: #5a67d8;
+    --odysseus-primary-light: #7c8cf0;
+    --odysseus-secondary: #764ba2;
+    --odysseus-bg: #ffffff;
+    --odysseus-bg-secondary: #f8f9fa;
+    --odysseus-text: #1a202c;
+    --odysseus-text-light: #718096;
+    --odysseus-border: #e2e8f0;
+    --odysseus-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    --odysseus-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --odysseus-radius: 16px;
+    --odysseus-radius-sm: 12px;
+    --odysseus-radius-xs: 8px;
+    --odysseus-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    --odysseus-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --odysseus-z-index: 999999;
+}
+
+/* Thème sombre */
+.odysseus-widget-dark {
+    --odysseus-bg: #1a202c;
+    --odysseus-bg-secondary: #2d3748;
+    --odysseus-text: #f7fafc;
+    --odysseus-text-light: #a0aec0;
+    --odysseus-border: #4a5568;
+}
+
+/* ============================================
+   CONTAINER PRINCIPAL
+   ============================================ */
+.odysseus-widget {
+    font-family: var(--odysseus-font);
+    position: fixed;
+    z-index: var(--odysseus-z-index);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.odysseus-widget-bottom-right {
+    bottom: 24px;
+    right: 24px;
+}
+
+.odysseus-widget-bottom-left {
+    bottom: 24px;
+    left: 24px;
+}
+
+.odysseus-widget-top-right {
+    top: 24px;
+    right: 24px;
+}
+
+.odysseus-widget-top-left {
+    top: 24px;
+    left: 24px;
+}
+
+/* ============================================
+   BOUTON FLOTTANT (TOGGLE)
+   ============================================ */
+.odysseus-widget-toggle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--odysseus-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--odysseus-transition);
+    position: relative;
+    color: white;
+}
+
+.odysseus-widget-toggle:hover {
+    transform: scale(1.08) rotate(5deg);
+    box-shadow: 0 12px 48px rgba(102, 126, 234, 0.4);
+}
+
+.odysseus-widget-toggle:active {
+    transform: scale(0.95);
+}
+
+.odysseus-widget-toggle.odysseus-active {
+    background: var(--odysseus-text);
+    transform: rotate(90deg);
+}
+
+.odysseus-widget-toggle svg {
+    width: 28px;
+    height: 28px;
+    transition: var(--odysseus-transition);
+}
+
+/* Badge de notification */
+.odysseus-notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e53e3e;
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    border: 2px solid white;
+    box-shadow: 0 2px 8px rgba(229, 62, 62, 0.4);
+    animation: odysseus-pulse 2s infinite;
+}
+
+@keyframes odysseus-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ============================================
+   FENÊTRE DE CHAT
+   ============================================ */
+.odysseus-widget-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 380px;
+    max-width: calc(100vw - 48px);
+    height: 580px;
+    max-height: calc(100vh - 120px);
+    background: var(--odysseus-bg);
+    border-radius: var(--odysseus-radius);
+    box-shadow: var(--odysseus-shadow);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+    transition: var(--odysseus-transition);
+}
+
+.odysseus-widget-window.odysseus-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+}
+
+/* Position gauche */
+.odysseus-widget-bottom-left .odysseus-widget-window,
+.odysseus-widget-top-left .odysseus-widget-window {
+    right: auto;
+    left: 0;
+}
+
+.odysseus-widget-top-right .odysseus-widget-window,
+.odysseus-widget-top-left .odysseus-widget-window {
+    bottom: auto;
+    top: 80px;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.odysseus-widget-header {
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.odysseus-widget-header-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.odysseus-widget-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.odysseus-widget-avatar svg {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+}
+
+.odysseus-widget-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.odysseus-widget-status {
+    font-size: 12px;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.odysseus-widget-status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #48bb78;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+    animation: odysseus-blink 2s infinite;
+}
+
+@keyframes odysseus-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.odysseus-widget-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.odysseus-header-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--odysseus-transition);
+}
+
+.odysseus-header-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.1);
+}
+
+/* ============================================
+   ZONE DE MESSAGES
+   ============================================ */
+.odysseus-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: var(--odysseus-bg-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar personnalisée */
+.odysseus-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.odysseus-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.odysseus-messages::-webkit-scrollbar-thumb {
+    background: var(--odysseus-border);
+    border-radius: 3px;
+}
+
+.odysseus-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--odysseus-text-light);
+}
+
+/* ============================================
+   MESSAGES INDIVIDUELS
+   ============================================ */
+.odysseus-message {
+    display: flex;
+    gap: 12px;
+    max-width: 85%;
+    animation: odysseus-slideIn 0.3s ease;
+}
+
+@keyframes odysseus-slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.odysseus-message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.odysseus-message.bot {
+    align-self: flex-start;
+}
+
+.odysseus-message.error {
+    align-self: center;
+    max-width: 100%;
+}
+
+.odysseus-message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.odysseus-message.bot .odysseus-message-avatar {
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+}
+
+.odysseus-message.user .odysseus-message-avatar {
+    background: var(--odysseus-text-light);
+}
+
+.odysseus-message-avatar svg {
+    width: 18px;
+    height: 18px;
+    stroke: white;
+}
+
+.odysseus-message-content {
+    padding: 12px 16px;
+    border-radius: var(--odysseus-radius-sm);
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    box-shadow: var(--odysseus-shadow-sm);
+}
+
+.odysseus-message.bot .odysseus-message-content {
+    background: var(--odysseus-bg);
+    color: var(--odysseus-text);
+    border-bottom-left-radius: 4px;
+}
+
+.odysseus-message.user .odysseus-message-content {
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.odysseus-message.error .odysseus-message-content {
+    background: #fed7d7;
+    color: #c53030;
+    text-align: center;
+    font-size: 13px;
+}
+
+.odysseus-message-content p {
+    margin: 0;
+}
+
+.odysseus-message-content p + p {
+    margin-top: 8px;
+}
+
+/* ============================================
+   INDICATEUR DE FRAPPE
+   ============================================ */
+.odysseus-typing .odysseus-message-content {
+    padding: 16px 20px;
+}
+
+.odysseus-typing-dots {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.odysseus-typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--odysseus-text-light);
+    animation: odysseus-bounce 1.4s infinite;
+}
+
+.odysseus-typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.odysseus-typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes odysseus-bounce {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+    30% {
+        transform: translateY(-8px);
+        opacity: 1;
+    }
+}
+
+/* ============================================
+   ZONE DE SAISIE
+   ============================================ */
+.odysseus-widget-input-container {
+    padding: 16px 20px;
+    background: var(--odysseus-bg);
+    border-top: 1px solid var(--odysseus-border);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.odysseus-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--odysseus-border);
+    border-radius: 24px;
+    font-size: 14px;
+    font-family: var(--odysseus-font);
+    background: var(--odysseus-bg-secondary);
+    color: var(--odysseus-text);
+    outline: none;
+    transition: var(--odysseus-transition);
+}
+
+.odysseus-input:focus {
+    border-color: var(--odysseus-primary);
+    background: var(--odysseus-bg);
+}
+
+.odysseus-input::placeholder {
+    color: var(--odysseus-text-light);
+}
+
+.odysseus-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+    border: none;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--odysseus-transition);
+    flex-shrink: 0;
+}
+
+.odysseus-send-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.odysseus-send-btn:active {
+    transform: scale(0.95);
+}
+
+.odysseus-send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================
+   UPLOAD DE FICHIERS
+   ============================================ */
+.odysseus-upload-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.odysseus-upload-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--odysseus-bg-secondary);
+    border: 2px solid var(--odysseus-border);
+    color: var(--odysseus-text-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--odysseus-transition);
+}
+
+.odysseus-upload-btn:hover {
+    border-color: var(--odysseus-primary);
+    color: var(--odysseus-primary);
+    transform: scale(1.05);
+}
+
+.odysseus-upload-progress {
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--odysseus-border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.odysseus-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--odysseus-primary), var(--odysseus-secondary));
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+/* ============================================
+   FOOTER
+   ============================================ */
+.odysseus-widget-footer {
+    padding: 8px 20px;
+    background: var(--odysseus-bg-secondary);
+    border-top: 1px solid var(--odysseus-border);
+    text-align: center;
+    font-size: 11px;
+    color: var(--odysseus-text-light);
+    flex-shrink: 0;
+}
+
+/* ============================================
+   MODAL BOOKING
+   ============================================ */
+.odysseus-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: calc(var(--odysseus-z-index) + 1);
+    animation: odysseus-fadeIn 0.2s ease;
+}
+
+@keyframes odysseus-fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.odysseus-modal-content {
+    background: var(--odysseus-bg);
+    border-radius: var(--odysseus-radius);
+    max-width: 480px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: var(--odysseus-shadow);
+    animation: odysseus-scaleIn 0.3s ease;
+}
+
+@keyframes odysseus-scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.odysseus-modal-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--odysseus-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.odysseus-modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--odysseus-text);
+}
+
+.odysseus-modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--odysseus-text-light);
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--odysseus-transition);
+}
+
+.odysseus-modal-close:hover {
+    background: var(--odysseus-bg-secondary);
+    color: var(--odysseus-text);
+}
+
+.odysseus-modal-body {
+    padding: 20px;
+}
+
+.odysseus-btn-primary {
+    width: 100%;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--odysseus-primary) 0%, var(--odysseus-secondary) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--odysseus-radius-xs);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--odysseus-transition);
+    font-family: var(--odysseus-font);
+}
+
+.odysseus-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+/* ============================================
+   RESPONSIVE MOBILE
+   ============================================ */
+@media (max-width: 480px) {
+    .odysseus-widget-bottom-right,
+    .odysseus-widget-bottom-left {
+        bottom: 16px;
+    }
+    
+    .odysseus-widget-bottom-right {
+        right: 16px;
+    }
+    
+    .odysseus-widget-bottom-left {
+        left: 16px;
+    }
+    
+    .odysseus-widget-toggle {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .odysseus-widget-toggle svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    .odysseus-widget-window {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 85vh;
+        max-height: 85vh;
+        border-radius: var(--odysseus-radius) var(--odysseus-radius) 0 0;
+    }
+    
+    .odysseus-widget-window.odysseus-open {
+        transform: translateY(0);
+    }
+    
+    .odysseus-message {
+        max-width: 90%;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITÉ
+   ============================================ */
+.odysseus-widget-toggle:focus,
+.odysseus-send-btn:focus,
+.odysseus-header-btn:focus,
+.odysseus-upload-btn:focus,
+.odysseus-input:focus {
+    outline: 2px solid var(--odysseus-primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   PERSONNALISATION PAR CLIENT (via data-attributes)
+   ============================================ */
+/* Exemple: <script data-theme-color="#ff6b6b" ...> */
+.odysseus-widget[data-theme-color] {
+    --odysseus-primary: attr(data-theme-color);
+}
