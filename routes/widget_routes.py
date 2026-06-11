@@ -356,3 +356,29 @@ async def get_widget_config(client_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/analytics")
+async def widget_analytics(event_data: dict):
+    """
+    Endpoint pour recevoir les événements analytics du widget
+    """
+    try:
+        # Log l'événement (tu peux aussi le stocker en DB)
+        print(f"📊 Analytics Event: {event_data.get('event')} - Client: {event_data.get('client_id')}")
+        
+        # Optionnel : Stocker en DB pour analyse ultérieure
+        # conn = sqlite3.connect(str(DB_FILE))
+        # cursor = conn.cursor()
+        # cursor.execute("""
+        #     INSERT INTO analytics_events (event_type, client_id, session_id, data, timestamp)
+        #     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+        # """, (event_data.get('event'), event_data.get('client_id'), 
+        #       event_data.get('session_id'), json.dumps(event_data)))
+        # conn.commit()
+        # conn.close()
+        
+        return {"status": "ok"}
+    except Exception as e:
+        print(f"Analytics error: {e}")
+        return {"status": "error", "message": str(e)}
