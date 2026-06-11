@@ -14,10 +14,7 @@
             padding: 40px 20px;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         header {
             background: white;
@@ -28,16 +25,8 @@
             text-align: center;
         }
         
-        h1 {
-            color: #667eea;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-        }
+        h1 { color: #667eea; font-size: 32px; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 18px; }
         
         .grid {
             display: grid;
@@ -53,25 +42,11 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
         }
         
-        .card h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+        .card h2 { color: #333; margin-bottom: 20px; font-size: 24px; }
         
-        .config-item {
-            margin-bottom: 20px;
-        }
-        
-        .config-item label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        .config-item select,
-        .config-item input {
+        .config-item { margin-bottom: 20px; }
+        .config-item label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; }
+        .config-item select, .config-item input {
             width: 100%;
             padding: 10px 14px;
             border: 2px solid #e2e8f0;
@@ -79,30 +54,14 @@
             font-size: 14px;
             font-family: inherit;
         }
-        
-        .config-item select:focus,
-        .config-item input:focus {
+        .config-item select:focus, .config-item input:focus {
             outline: none;
             border-color: #667eea;
         }
         
-        .checkbox-group {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-        }
+        .checkbox-group { display: flex; gap: 20px; flex-wrap: wrap; }
+        .checkbox-item { display: flex; align-items: center; gap: 8px; }
+        .checkbox-item input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; }
         
         .btn {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -116,14 +75,9 @@
             transition: all 0.3s;
             width: 100%;
         }
-        
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
         }
         
         .code-section {
@@ -132,12 +86,7 @@
             border-radius: 16px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
-        
-        .code-section h2 {
-            color: white;
-            margin-bottom: 20px;
-        }
-        
+        .code-section h2 { color: white; margin-bottom: 20px; }
         .code-block {
             background: #2d2d2d;
             padding: 20px;
@@ -145,14 +94,12 @@
             overflow-x: auto;
             margin-top: 15px;
         }
-        
         .code-block code {
             color: #d4d4d4;
             font-family: 'Courier New', monospace;
             font-size: 13px;
             white-space: pre-wrap;
         }
-        
         .copy-btn {
             background: #4a5568;
             color: white;
@@ -164,48 +111,25 @@
             margin-top: 10px;
             transition: all 0.2s;
         }
-        
-        .copy-btn:hover {
-            background: #5a6578;
-        }
-        
-        .copy-btn.copied {
-            background: #48bb78;
-        }
+        .copy-btn:hover { background: #5a6578; }
+        .copy-btn.copied { background: #48bb78; }
         
         .features {
             background: white;
             padding: 30px;
             border-radius: 16px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            margin-top: 30px;
         }
-        
-        .features h2 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        
+        .features h2 { color: #333; margin-bottom: 20px; }
         .features ul {
             list-style: none;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 12px;
         }
-        
-        .features li {
-            padding: 10px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #555;
-        }
-        
-        .features li:before {
-            content: "✓";
-            color: #48bb78;
-            font-weight: bold;
-            font-size: 18px;
-        }
+        .features li { padding: 10px 0; display: flex; align-items: center; gap: 10px; color: #555; }
+        .features li:before { content: "✓"; color: #48bb78; font-weight: bold; font-size: 18px; }
         
         .stats {
             display: grid;
@@ -213,7 +137,6 @@
             gap: 15px;
             margin-top: 20px;
         }
-        
         .stat-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -221,33 +144,14 @@
             border-radius: 12px;
             text-align: center;
         }
+        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 5px; }
+        .stat-label { font-size: 14px; opacity: 0.9; }
         
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        footer {
-            text-align: center;
-            color: white;
-            margin-top: 40px;
-            opacity: 0.9;
-        }
+        footer { text-align: center; color: white; margin-top: 40px; opacity: 0.9; }
         
         @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            h1 {
-                font-size: 24px;
-            }
+            .grid { grid-template-columns: 1fr; }
+            h1 { font-size: 24px; }
         }
     </style>
 </head>
@@ -259,7 +163,6 @@
         </header>
         
         <div class="grid">
-            <!-- Configuration -->
             <div class="card">
                 <h2>⚙️ Configuration du Widget</h2>
                 
@@ -315,10 +218,9 @@
                     </div>
                 </div>
                 
-                <button class="btn" onclick="loadWidget()">🚀 Charger le Widget</button>
+                <button class="btn" id="loadWidgetBtn">🚀 Charger le Widget</button>
             </div>
             
-            <!-- Stats en temps réel -->
             <div class="card">
                 <h2>📊 Statistiques en temps réel</h2>
                 <div class="stats">
@@ -349,7 +251,6 @@
             </div>
         </div>
         
-        <!-- Code d'intégration -->
         <div class="code-section">
             <h2>📝 Code d'intégration</h2>
             <p style="color: #aaa; margin-bottom: 15px;">Copiez ce code dans votre site web :</p>
@@ -364,11 +265,10 @@
         data-booking="false"&gt;
 &lt;/script&gt;</code>
             </div>
-            <button class="copy-btn" onclick="copyCode()">📋 Copier le code</button>
+            <button class="copy-btn" id="copyBtn">📋 Copier le code</button>
         </div>
         
-        <!-- Fonctionnalités -->
-        <div class="features" style="margin-top: 30px;">
+        <div class="features">
             <h2>✨ Fonctionnalités incluses</h2>
             <ul>
                 <li>Multi-langue (FR/EN/ES)</li>
@@ -395,161 +295,6 @@
         </footer>
     </div>
     
-    <!-- Widget sera injecté ici -->
-    
-    <script>
-        // État global
-        let widgetConfig = {
-            clientId: 'client_demo',
-            position: 'bottom-right',
-            language: 'auto',
-            sound: true,
-            analytics: true,
-            upload: false,
-            booking: false
-        };
-        
-        // Stats
-        let stats = {
-            messages: 0,
-            leads: 0,
-            sessions: new Set()
-        };
-        
-        // Charger le widget
-        function loadWidget() {
-            // Récupérer la configuration
-            widgetConfig.clientId = document.getElementById('clientId').value;
-            widgetConfig.position = document.getElementById('position').value;
-            widgetConfig.language = document.getElementById('language').value;
-            widgetConfig.sound = document.getElementById('enableSound').checked;
-            widgetConfig.analytics = document.getElementById('enableAnalytics').checked;
-            widgetConfig.upload = document.getElementById('enableUpload').checked;
-            widgetConfig.booking = document.getElementById('enableBooking').checked;
-            
-            // Supprimer l'ancien widget
-            const oldWidget = document.querySelector('script[data-widget="odysseus-pro"]');
-            if (oldWidget) oldWidget.remove();
-            
-            const oldContainer = document.getElementById('odysseus-widget-container');
-            if (oldContainer) oldContainer.remove();
-            
-            // Créer le nouveau script
-            const script = document.createElement('script');
-            script.src = '/static/widget-pro.js';
-            script.setAttribute('data-client-id', widgetConfig.clientId);
-            script.setAttribute('data-position', widgetConfig.position);
-            script.setAttribute('data-language', widgetConfig.language);
-            script.setAttribute('data-sound', widgetConfig.sound);
-            script.setAttribute('data-analytics', widgetConfig.analytics);
-            script.setAttribute('data-upload', widgetConfig.upload);
-            script.setAttribute('data-booking', widgetConfig.booking);
-            script.setAttribute('data-widget', 'odysseus-pro');
-            
-            document.body.appendChild(script);
-            
-            // Mettre à jour le code d'intégration
-            updateIntegrationCode();
-            
-            // Log
-            logActivity(`Widget chargé: ${widgetConfig.clientId} (${widgetConfig.position})`);
-        }
-        
-        // Mettre à jour le code d'intégration
-        function updateIntegrationCode() {
-            const code = `<script src="https://odysseus.cooligital.africa/static/widget-pro.js"
-        data-client-id="${widgetConfig.clientId}"
-        data-position="${widgetConfig.position}"
-        data-language="${widgetConfig.language}"
-        data-sound="${widgetConfig.sound}"
-        data-analytics="${widgetConfig.analytics}"
-        data-upload="${widgetConfig.upload}"
-        data-booking="${widgetConfig.booking}"
-><\/script>`;
-            
-            document.getElementById('integrationCode').textContent = code;
-        }
-        
-        // Copier le code
-        function copyCode() {
-            const code = document.getElementById('integrationCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = document.querySelector('.copy-btn');
-                btn.textContent = '✅ Copié !';
-                btn.classList.add('copied');
-                
-                setTimeout(() => {
-                    btn.textContent = '📋 Copier le code';
-                    btn.classList.remove('copied');
-                }, 2000);
-            });
-        }
-        
-        // Logger l'activité
-        function logActivity(message) {
-            const log = document.getElementById('activityLog');
-            const time = new Date().toLocaleTimeString('fr-FR');
-            const entry = document.createElement('div');
-            entry.textContent = `[${time}] ${message}`;
-            entry.style.marginBottom = '5px';
-            entry.style.padding = '5px';
-            entry.style.background = 'white';
-            entry.style.borderRadius = '4px';
-            
-            log.insertBefore(entry, log.firstChild);
-            
-            // Garder seulement les 10 derniers
-            while (log.children.length > 10) {
-                log.removeChild(log.lastChild);
-            }
-        }
-        
-        // Écouter les événements du widget
-        window.addEventListener('message', (event) => {
-            if (event.data.type === 'odysseus-widget-event') {
-                const { event: eventName, data } = event.data;
-                
-                switch(eventName) {
-                    case 'message_sent':
-                        stats.messages++;
-                        document.getElementById('statMessages').textContent = stats.messages;
-                        logActivity(`Message envoyé`);
-                        break;
-                        
-                    case 'lead_qualified':
-                        stats.leads++;
-                        document.getElementById('statLeads').textContent = stats.leads;
-                        logActivity(`Lead qualifié (score: ${data.score})`);
-                        break;
-                        
-                    case 'widget_opened':
-                        if (data.session_id) {
-                            stats.sessions.add(data.session_id);
-                            document.getElementById('statSessions').textContent = stats.sessions.size;
-                        }
-                        logActivity('Widget ouvert');
-                        break;
-                        
-                    case 'widget_closed':
-                        logActivity('Widget fermé');
-                        break;
-                        
-                    case 'file_uploaded':
-                        logActivity(`Fichier uploadé: ${data.filename}`);
-                        break;
-                        
-                    case 'booking_modal_opened':
-                        logActivity('Modal RDV ouvert');
-                        break;
-                }
-            }
-        });
-        
-        // Initialisation
-        window.addEventListener('DOMContentLoaded', () => {
-            logActivity('Page de démo chargée');
-            updateIntegrationCode();
-        });
-    </script>
+    <script src="/test/widget-pro-test.js"></script>
 </body>
 </html>
