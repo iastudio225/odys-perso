@@ -13,24 +13,18 @@ import sqlite3
 import httpx
 from pathlib import Path
 
-# Après (avec dépendances vides pour bypasser l'auth)
-router = APIRouter(
-    prefix="/api/widget", 
-    tags=["widget"],
-    dependencies=[]  # Pas d'authentification requise
-)
+router = APIRouter(prefix="/api/widget", tags=["widget"])
 
-# Configuration
-CONFIG_FILE = Path(__file__).parent.parent / "clients_config.json"
-# Utiliser le dossier data/ qui est monté en volume (persistant)
-DB_FILE = Path(__file__).parent.parent / "data" / "leads.db"
+# Configuration - Chemins absolus pour Docker
+CONFIG_FILE = Path("/app/clients_config.json")
+DB_FILE = Path("/app/data/leads.db")
 
 # Modèles de données
 class WidgetMessage(BaseModel):
     client_id: str = Field(..., description="Identifiant du client/site")
     message: str = Field(..., description="Message du visiteur")
     session_id: Optional[str] = Field(None, description="ID de session existante")
-    visitor_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Données visiteur (nom, email, etc.)")
+    visitor_data: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Données visiteur")
     page_url: Optional[str] = Field(None, description="URL de la page courante")
 
 class WidgetResponse(BaseModel):
@@ -44,59 +38,69 @@ class WidgetResponse(BaseModel):
 class ClientConfig(BaseModel):
     name: str
     system_prompt: str
-    llm_provider: str = "gemini"  # gemini, openrouter, groq
+    llm_provider: str = "gemini"
     llm_model: str = "gemini-2.0-flash-exp"
     qualification_keywords: List[str] = []
     min_qualification_score: float = 0.6
     webhook_url: Optional[str] = None
     language: str = "fr"
 
-# Gestion de la base de données
+# Initialisation de la base de données
 def init_db():
     """Initialise la base de données des leads"""
-    # S'assurer que le dossier data existe
-    DB_FILE.parent.mkdir(parents=True, exist_ok=True)
-    
-    conn = sqlite3.connect(str(DB_FILE))
-    cursor = conn.cursor()
-    
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS leads (
-            id TEXT PRIMARY KEY,
-            client_id TEXT NOT NULL,
-            session_id TEXT NOT NULL,
-            name TEXT,
-            email TEXT,
-            phone TEXT,
-            company TEXT,
-            need TEXT,
-            qualification_score REAL,
-            status TEXT DEFAULT 'new',
-            conversation_history TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS conversations (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            lead_id TEXT NOT NULL,
-            role TEXT NOT NULL,
-            message TEXT NOT NULL,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (lead_id) REFERENCES leads(id)
-        )
-    """)
-    
-    conn.commit()
-    conn.close()
-    print(f"✅ Widget DB initialized at {DB_FILE}")
+    try:
+        # S'assurer que le dossier data existe
+        DB_FILE.parent.mkdir(parents=True, exist_ok=True)
+        
+        print(f"🔧 Initializing widget DB at: {DB_FILE}")
+        
+        conn = sqlite3.connect(str(DB_FILE))
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS leads (
+                id TEXT PRIMARY KEY,
+                client_id TEXT NOT NULL,
+                session_id TEXT NOT NULL,
+                name TEXT,
+                email TEXT,
+                phone TEXT,
+                company TEXT,
+                need TEXT,
+                qualification_score REAL,
+                status TEXT DEFAULT 'new',
+                conversation_history TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                lead_id TEXT NOT NULL,
+                role TEXT NOT NULL,
+                message TEXT NOT NULL,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (lead_id) REFERENCES leads(id)
+            )
+        """)
+        
+        conn.commit()
+        conn.close()
+        print(f"✅ Widget DB initialized successfully at {DB_FILE}")
+    except Exception as e:
+        print(f"❌ Error initializing widget DB: {e}")
+        import traceback
+        traceback.print_exc()
+
+# Appeler init_db() au chargement du module
+init_db()
 
 def load_client_config(client_id: str) -> ClientConfig:
     """Charge la configuration d'un client"""
     if not CONFIG_FILE.exists():
-        raise HTTPException(status_code=400, detail=f"Configuration file not found for client: {client_id}")
+        raise HTTPException(status_code=400, detail=f"Configuration file not found at {CONFIG_FILE}")
     
     with open(CONFIG_FILE, 'r', encoding='utf-8') as f:
         configs = json.load(f)
@@ -121,18 +125,15 @@ def calculate_qualification_score(message: str, config: ClientConfig) -> float:
     score = 0.0
     message_lower = message.lower()
     
-    # Score basé sur les mots-clés de qualification
     for keyword in config.qualification_keywords:
         if keyword.lower() in message_lower:
             score += 0.2
     
-    # Score basé sur la longueur du message (engagement)
     if len(message) > 50:
         score += 0.1
     if len(message) > 100:
         score += 0.1
     
-    # Score basé sur la présence d'informations de contact
     if '@' in message:
         score += 0.15
     if any(char.isdigit() for char in message):
@@ -143,10 +144,9 @@ def calculate_qualification_score(message: str, config: ClientConfig) -> float:
 async def call_llm_provider(provider: str, model: str, system_prompt: str, user_message: str, conversation_history: List[Dict]) -> str:
     """Appelle le provider LLM configuré"""
     
-    # Construire les messages pour l'API
     messages = [
         {"role": "system", "content": system_prompt},
-        *conversation_history[-10:],  # Garder les 10 derniers messages
+        *conversation_history[-10:],
         {"role": "user", "content": user_message}
     ]
     
@@ -237,28 +237,20 @@ async def send_webhook_notification(webhook_url: str, lead_data: Dict):
     except Exception as e:
         print(f"Webhook notification failed: {e}")
 
-    init_db()
-
 @router.post("/chat", response_model=WidgetResponse)
 async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundTasks):
-    """
-    Endpoint principal pour le chat widget
-    Reçoit un message et renvoie la réponse de l'agent IA
-    """
+    """Endpoint principal pour le chat widget"""
     
-    # Charger la configuration du client
+    print(f"📨 Widget chat request from client: {message_data.client_id}")
+    
     config = load_client_config(message_data.client_id)
-    
-    # Générer ou récupérer les IDs
     session_id = message_data.session_id or generate_session_id()
     lead_id = None
     
-    # Connexion DB
     conn = sqlite3.connect(str(DB_FILE))
     cursor = conn.cursor()
     
     try:
-        # Vérifier si le lead existe déjà
         cursor.execute(
             "SELECT id, qualification_score, conversation_history FROM leads WHERE session_id = ?",
             (session_id,)
@@ -269,11 +261,9 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
             lead_id = existing_lead[0]
             conversation_history = json.loads(existing_lead[2] or "[]")
         else:
-            # Créer un nouveau lead
             lead_id = generate_lead_id()
             conversation_history = []
             
-            # Extraire les données du visiteur
             name = message_data.visitor_data.get("name")
             email = message_data.visitor_data.get("email")
             phone = message_data.visitor_data.get("phone")
@@ -284,18 +274,15 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (lead_id, message_data.client_id, session_id, name, email, phone, company, message_data.message))
         
-        # Calculer le score de qualification
         qualification_score = calculate_qualification_score(message_data.message, config)
         is_qualified = qualification_score >= config.min_qualification_score
         
-        # Déterminer l'action suggérée
         suggested_action = None
         if is_qualified:
             suggested_action = "contact_urgent" if qualification_score > 0.8 else "contact_standard"
         elif len(conversation_history) > 4:
             suggested_action = "relance_douce"
         
-        # Appeler le LLM
         llm_response = await call_llm_provider(
             provider=config.llm_provider,
             model=config.llm_model,
@@ -304,11 +291,9 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
             conversation_history=conversation_history
         )
         
-        # Mettre à jour l'historique de conversation
         conversation_history.append({"role": "user", "content": message_data.message})
         conversation_history.append({"role": "assistant", "content": llm_response})
         
-        # Sauvegarder dans la DB
         cursor.execute("""
             UPDATE leads 
             SET qualification_score = ?, 
@@ -319,7 +304,6 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
         """, (qualification_score, json.dumps(conversation_history), 
               "qualified" if is_qualified else "new", lead_id))
         
-        # Sauvegarder le message dans la table conversations
         cursor.execute("""
             INSERT INTO conversations (lead_id, role, message)
             VALUES (?, ?, ?)
@@ -332,7 +316,6 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
         
         conn.commit()
         
-        # Envoyer notification webhook si lead qualifié
         if is_qualified and config.webhook_url:
             lead_data = {
                 "lead_id": lead_id,
@@ -361,7 +344,7 @@ async def widget_chat(message_data: WidgetMessage, background_tasks: BackgroundT
 
 @router.get("/config/{client_id}")
 async def get_widget_config(client_id: str):
-    """Récupère la configuration publique d'un widget (sans les prompts sensibles)"""
+    """Récupère la configuration publique d'un widget"""
     try:
         config = load_client_config(client_id)
         return {
