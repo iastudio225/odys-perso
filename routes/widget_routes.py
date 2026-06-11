@@ -13,7 +13,12 @@ import sqlite3
 import httpx
 from pathlib import Path
 
-router = APIRouter(prefix="/api/widget", tags=["widget"])
+# Après (avec dépendances vides pour bypasser l'auth)
+router = APIRouter(
+    prefix="/api/widget", 
+    tags=["widget"],
+    dependencies=[]  # Pas d'authentification requise
+)
 
 # Configuration
 CONFIG_FILE = Path(__file__).parent.parent / "clients_config.json"
