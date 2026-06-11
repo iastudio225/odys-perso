@@ -1,4 +1,4 @@
-// test/widget-test.js
+// test/widget-test.js - Compatible CSP (pas de inline handlers)
 (function() {
     'use strict';
     
@@ -11,12 +11,15 @@
         document.querySelectorAll('.client-card').forEach(card => {
             card.classList.remove('active');
         });
-        document.querySelector(`[data-client="${clientId}"]`).classList.add('active');
+        const activeCard = document.querySelector(`[data-client="${clientId}"]`);
+        if (activeCard) {
+            activeCard.classList.add('active');
+        }
         
         // Recharger le widget avec le nouveau client
         reloadWidget(clientId);
         
-        console.log(`Client sélectionné: ${clientId}`);
+        console.log(`✅ Client sélectionné: ${clientId}`);
     }
     
     function reloadWidget(clientId) {
@@ -26,7 +29,7 @@
             oldContainer.remove();
         }
         
-        // Supprimer l'ancien script
+        // Supprimer l'ancien script widget
         const oldScript = document.querySelector('script[data-widget="odysseus"]');
         if (oldScript) {
             oldScript.remove();
@@ -35,8 +38,8 @@
         // Créer et ajouter le nouveau script
         const script = document.createElement('script');
         script.src = '/static/widget.js';
-        script.dataset.clientId = clientId;
-        script.dataset.widget = 'odysseus';
+        script.setAttribute('data-client-id', clientId);
+        script.setAttribute('data-widget', 'odysseus');
         document.body.appendChild(script);
     }
     
@@ -66,27 +69,46 @@
             const data = await response.json();
             
             responseDiv.innerHTML = `
-                <strong>✅ Réponse reçue:</strong><br><br>
-                <strong>Client:</strong> ${currentClient}<br>
-                <strong>Session ID:</strong> ${data.session_id}<br>
-                <strong>Lead ID:</strong> ${data.lead_id || 'N/A'}<br>
-                <strong>Score qualification:</strong> ${data.qualification_score}<br>
-                <strong>Qualifié:</strong> ${data.is_qualified ? '✅ Oui' : '❌ Non'}<br>
-                <strong>Action suggérée:</strong> ${data.suggested_action || 'Aucune'}<br><br>
-                <strong>Réponse de l'agent:</strong><br>
-                ${data.response}
+<strong>✅ Réponse reçue:</strong>
+
+<strong>Client:</strong> ${currentClient}
+<strong>Session ID:</strong> ${data.session_id}
+<strong>Lead ID:</strong> ${data.lead_id || 'N/A'}
+<strong>Score qualification:</strong> ${data.qualification_score}
+<strong>Qualifié:</strong> ${data.is_qualified ? '✅ Oui' : '❌ Non'}
+<strong>Action suggérée:</strong> ${data.suggested_action || 'Aucune'}
+
+<strong>Réponse de l'agent:</strong>
+${data.response}
             `;
             
         } catch (error) {
-            responseDiv.innerHTML = `<strong>❌ Erreur:</strong><br>${error.message}`;
+            responseDiv.innerHTML = `<strong>❌ Erreur:</strong>\n${error.message}`;
         }
     }
     
-    // Exposer les fonctions globalement
-    window.selectClient = selectClient;
-    window.testAPI = testAPI;
+    // Attacher les écouteurs d'événements après le chargement du DOM
+    document.addEventListener('DOMContentLoaded', function() {
+        // Écouteurs pour les cartes clients
+        document.querySelectorAll('.client-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const clientId = this.getAttribute('data-client');
+                if (clientId) {
+                    selectClient(clientId);
+                }
+            });
+        });
+        
+        // Écouteur pour le bouton test API
+        const testButton = document.getElementById('test-api-button');
+        if (testButton) {
+            testButton.addEventListener('click', testAPI);
+        }
+        
+        console.log('🎯 Widget test page initialized');
+    });
     
-    // Charger le widget initial
+    // Charger le widget initial au chargement complet
     window.addEventListener('load', () => {
         reloadWidget(currentClient);
     });

@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test Widget Odysseus - Agent Commercial IA</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
@@ -18,10 +14,7 @@
             padding: 20px;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1200px; margin: 0 auto; }
         
         header {
             background: white;
@@ -31,15 +24,8 @@
             margin-bottom: 30px;
         }
         
-        h1 {
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 18px;
-        }
+        h1 { color: #667eea; margin-bottom: 10px; }
+        .subtitle { color: #666; font-size: 18px; }
         
         .test-section {
             background: white;
@@ -49,11 +35,7 @@
             margin-bottom: 20px;
         }
         
-        .test-section h2 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
+        .test-section h2 { color: #333; margin-bottom: 20px; font-size: 24px; }
         
         .client-selector {
             display: grid;
@@ -81,15 +63,8 @@
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
         }
         
-        .client-card h3 {
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-        
-        .client-card p {
-            color: #666;
-            font-size: 14px;
-        }
+        .client-card h3 { color: #667eea; margin-bottom: 8px; }
+        .client-card p { color: #666; font-size: 14px; }
         
         .test-info {
             background: #f8f9fa;
@@ -98,29 +73,10 @@
             margin-top: 20px;
         }
         
-        .test-info h3 {
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .test-info ul {
-            list-style: none;
-            padding-left: 0;
-        }
-        
-        .test-info li {
-            padding: 8px 0;
-            color: #555;
-            display: flex;
-            align-items: center;
-        }
-        
-        .test-info li:before {
-            content: "✓";
-            color: #10b981;
-            font-weight: bold;
-            margin-right: 10px;
-        }
+        .test-info h3 { color: #333; margin-bottom: 15px; }
+        .test-info ul { list-style: none; padding-left: 0; }
+        .test-info li { padding: 8px 0; color: #555; display: flex; align-items: center; }
+        .test-info li:before { content: "✓"; color: #10b981; font-weight: bold; margin-right: 10px; }
         
         .code-block {
             background: #1e1e1e;
@@ -142,15 +98,8 @@
             margin-left: 10px;
         }
         
-        .status.testing {
-            background: #fef3c7;
-            color: #92400e;
-        }
-        
-        .status.success {
-            background: #d1fae5;
-            color: #065f46;
-        }
+        .status.testing { background: #fef3c7; color: #92400e; }
+        .status.success { background: #d1fae5; color: #065f46; }
         
         .api-test {
             background: #f0f9ff;
@@ -160,10 +109,7 @@
             margin-top: 20px;
         }
         
-        .api-test h3 {
-            color: #0369a1;
-            margin-bottom: 15px;
-        }
+        .api-test h3 { color: #0369a1; margin-bottom: 15px; }
         
         .api-test button {
             background: #0ea5e9;
@@ -191,6 +137,7 @@
             font-size: 13px;
             max-height: 300px;
             overflow-y: auto;
+            white-space: pre-wrap;
         }
         
         .footer {
@@ -212,22 +159,22 @@
             <h2>1. Sélectionnez un client à tester <span class="status testing">En test</span></h2>
             
             <div class="client-selector">
-                <div class="client-card active" data-client="client_demo" onclick="selectClient('client_demo')">
+                <div class="client-card active" data-client="client_demo">
                     <h3>Client Démo</h3>
                     <p>Services digitaux - Gemini</p>
                 </div>
                 
-                <div class="client-card" data-client="client_immobilier" onclick="selectClient('client_immobilier')">
+                <div class="client-card" data-client="client_immobilier">
                     <h3>Agence Immobilière</h3>
                     <p>Immobilier premium - OpenRouter</p>
                 </div>
                 
-                <div class="client-card" data-client="client_formation" onclick="selectClient('client_formation')">
+                <div class="client-card" data-client="client_formation">
                     <h3>Centre Formation</h3>
                     <p>Formation pro - Gemini</p>
                 </div>
                 
-                <div class="client-card" data-client="client_saas" onclick="selectClient('client_saas')">
+                <div class="client-card" data-client="client_saas">
                     <h3>SaaS B2B</h3>
                     <p>Solution SaaS - Groq</p>
                 </div>
@@ -252,7 +199,7 @@
             <div class="api-test">
                 <h3>Tester l'endpoint /api/widget/chat</h3>
                 <p style="margin-bottom: 15px; color: #555;">Cliquez pour envoyer une requête test à l'API</p>
-                <button onclick="testAPI()">🚀 Envoyer requête test</button>
+                <button id="test-api-button">🚀 Envoyer requête test</button>
                 <div id="api-response" class="api-response" style="display: none;"></div>
             </div>
         </div>
@@ -260,10 +207,8 @@
         <div class="test-section">
             <h2>3. Code d'intégration</h2>
             <p style="color: #666; margin-bottom: 15px;">Copiez ce code pour intégrer le widget sur votre site :</p>
-            <div class="code-block">
-&lt;script src="https://odysseus.cooligital.africa/static/widget.js" 
-        data-client-id="client_demo"&gt;&lt;/script&gt;
-            </div>
+            <div class="code-block">&lt;script src="https://odysseus.cooligital.africa/static/widget.js" 
+        data-client-id="client_demo"&gt;&lt;/script&gt;</div>
             <p style="color: #666; margin-top: 15px; font-size: 14px;">
                 Remplacez <code>client_demo</code> par l'ID du client souhaité
             </p>
@@ -274,7 +219,7 @@
         </div>
     </div>
     
-    <!-- Widget Odysseus - Sera injecté dynamiquement -->
-<script src="/test/widget-test.js"></script>
+    <!-- Widget Odysseus - Script externe (CSP compliant) -->
+    <script src="/test/widget-test.js"></script>
 </body>
 </html>
