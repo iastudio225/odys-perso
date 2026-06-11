@@ -403,3 +403,282 @@ async def widget_analytics(request: Request):
     except Exception as e:
         print(f"Analytics error: {e}")
         return {"status": "error", "message": str(e)}
+
+
+# ============================================
+# DASHBOARD & EXPORT
+# ============================================
+
+@router.get("/dashboard/stats")
+async def get_dashboard_stats(client_id: Optional[str] = None):
+    """Récupère les statistiques complètes pour le dashboard"""
+    try:
+        conn = sqlite3.connect(str(DB_FILE))
+        cursor = conn.cursor()
+        
+        # Stats générales
+        query = "SELECT COUNT(*) FROM leads"
+        params = []
+        if client_id:
+            query += " WHERE client_id = ?"
+            params.append(client_id)
+        cursor.execute(query, params)
+        total_leads = cursor.fetchone()[0]
+        
+        # Leads qualifiés
+        query = "SELECT COUNT(*) FROM leads WHERE qualification_score >= 0.6"
+        params = []
+        if client_id:
+            query += " AND client_id = ?"
+            params.append(client_id)
+        cursor.execute(query, params)
+        qualified_leads = cursor.fetchone()[0]
+        
+        # Score moyen
+        query = "SELECT AVG(qualification_score) FROM leads WHERE qualification_score IS NOT NULL"
+        params = []
+        if client_id:
+            query += " WHERE client_id = ?"
+            params.append(client_id)
+        cursor.execute(query, params)
+        avg_score = cursor.fetchone()[0] or 0
+        
+        # Leads par jour (7 derniers jours)
+        query = """
+            SELECT DATE(created_at) as date, COUNT(*) as count
+            FROM leads
+            WHERE created_at >= datetime('now', '-7 days')
+        """
+        params = []
+        if client_id:
+            query += " AND client_id = ?"
+            params.append(client_id)
+        query += " GROUP BY DATE(created_at) ORDER BY date"
+        cursor.execute(query, params)
+        leads_by_day = {row[0]: row[1] for row in cursor.fetchall()}
+        
+        # Top clients
+        cursor.execute("""
+            SELECT client_id, COUNT(*) as count, AVG(qualification_score) as avg_score
+            FROM leads
+            GROUP BY client_id
+            ORDER BY count DESC
+            LIMIT 5
+        """)
+        top_clients = [
+            {
+                "client_id": row[0],
+                "leads": row[1],
+                "avg_score": round(row[2] or 0, 2)
+            }
+            for row in cursor.fetchall()
+        ]
+        
+        # Analytics events
+        try:
+            cursor.execute("""
+                SELECT event_type, COUNT(*) FROM analytics_events
+                GROUP BY event_type
+            """)
+            analytics = {row[0]: row[1] for row in cursor.fetchall()}
+        except:
+            analytics = {}
+        
+        conn.close()
+        
+        return {
+            "total_leads": total_leads,
+            "qualified_leads": qualified_leads,
+            "qualification_rate": round(qualified_leads / total_leads * 100, 1) if total_leads > 0 else 0,
+            "avg_score": round(avg_score, 2),
+            "leads_by_day": leads_by_day,
+            "top_clients": top_clients,
+            "analytics": analytics
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/leads")
+async def get_leads(
+    client_id: Optional[str] = None,
+    qualified: Optional[bool] = None,
+    limit: int = 50,
+    offset: int = 0
+):
+    """Récupère la liste des leads avec filtres"""
+    try:
+        conn = sqlite3.connect(str(DB_FILE))
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id, client_id, session_id, name, email, phone, company, need,
+                   qualification_score, status, created_at
+            FROM leads
+            WHERE 1=1
+        """
+        params = []
+        
+        if client_id:
+            query += " AND client_id = ?"
+            params.append(client_id)
+        
+        if qualified is not None:
+            if qualified:
+                query += " AND qualification_score >= 0.6"
+            else:
+                query += " AND qualification_score < 0.6"
+        
+        query += " ORDER BY created_at DESC LIMIT ? OFFSET ?"
+        params.extend([limit, offset])
+        
+        cursor.execute(query, params)
+        leads = [
+            {
+                "id": row[0],
+                "client_id": row[1],
+                "session_id": row[2],
+                "name": row[3],
+                "email": row[4],
+                "phone": row[5],
+                "company": row[6],
+                "need": row[7],
+                "qualification_score": row[8],
+                "status": row[9],
+                "created_at": row[10]
+            }
+            for row in cursor.fetchall()
+        ]
+        
+        # Total count
+        count_query = "SELECT COUNT(*) FROM leads WHERE 1=1"
+        count_params = []
+        if client_id:
+            count_query += " AND client_id = ?"
+            count_params.append(client_id)
+        if qualified is not None:
+            if qualified:
+                count_query += " AND qualification_score >= 0.6"
+            else:
+                count_query += " AND qualification_score < 0.6"
+        
+        cursor.execute(count_query, count_params)
+        total = cursor.fetchone()[0]
+        
+        conn.close()
+        
+        return {
+            "leads": leads,
+            "total": total,
+            "limit": limit,
+            "offset": offset
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/leads/export")
+async def export_leads(
+    client_id: Optional[str] = None,
+    format: str = "csv"
+):
+    """Exporte les leads en CSV ou JSON"""
+    try:
+        conn = sqlite3.connect(str(DB_FILE))
+        cursor = conn.cursor()
+        
+        query = """
+            SELECT id, client_id, name, email, phone, company, need,
+                   qualification_score, status, conversation_history, created_at
+            FROM leads
+        """
+        params = []
+        if client_id:
+            query += " WHERE client_id = ?"
+            params.append(client_id)
+        query += " ORDER BY created_at DESC"
+        
+        cursor.execute(query, params)
+        leads = cursor.fetchall()
+        conn.close()
+        
+        if format == "json":
+            return {
+                "leads": [
+                    {
+                        "id": row[0],
+                        "client_id": row[1],
+                        "name": row[2],
+                        "email": row[3],
+                        "phone": row[4],
+                        "company": row[5],
+                        "need": row[6],
+                        "qualification_score": row[7],
+                        "status": row[8],
+                        "conversation": json.loads(row[9] or "[]"),
+                        "created_at": row[10]
+                    }
+                    for row in leads
+                ]
+            }
+        
+        # CSV
+        import csv
+        from fastapi.responses import StreamingResponse
+        import io
+        
+        output = io.StringIO()
+        writer = csv.writer(output)
+        
+        # Header
+        writer.writerow([
+            "ID", "Client", "Nom", "Email", "Téléphone", "Entreprise",
+            "Besoin", "Score", "Statut", "Date"
+        ])
+        
+        # Data
+        for row in leads:
+            writer.writerow([
+                row[0], row[1], row[2], row[3], row[4], row[5],
+                row[6], row[7], row[8], row[10]
+            ])
+        
+        output.seek(0)
+        
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=leads_{client_id or 'all'}.csv"}
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/leads/{lead_id}/conversation")
+async def get_lead_conversation(lead_id: str):
+    """Récupère l'historique de conversation d'un lead"""
+    try:
+        conn = sqlite3.connect(str(DB_FILE))
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT role, message, timestamp
+            FROM conversations
+            WHERE lead_id = ?
+            ORDER BY timestamp ASC
+        """, (lead_id,))
+        
+        messages = [
+            {
+                "role": row[0],
+                "message": row[1],
+                "timestamp": row[2]
+            }
+            for row in cursor.fetchall()
+        ]
+        
+        conn.close()
+        
+        return {"lead_id": lead_id, "messages": messages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
