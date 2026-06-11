@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Widget Odysseus - Agent Commercial IA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 18px;
+        }
+        
+        .test-section {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .test-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .client-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .client-card {
+            border: 2px solid #e9ecef;
+            padding: 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .client-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .client-card.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        }
+        
+        .client-card h3 {
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        
+        .client-card p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .test-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .test-info h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .test-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .test-info li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        
+        .test-info li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status.testing {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .api-test {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .api-test h3 {
+            color: #0369a1;
+            margin-bottom: 15px;
+        }
+        
+        .api-test button {
+            background: #0ea5e9;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .api-test button:hover {
+            background: #0284c7;
+            transform: translateY(-1px);
+        }
+        
+        .api-response {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Test Widget Odysseus</h1>
+            <p class="subtitle">Agent Commercial IA - Validation Étape 1</p>
+        </header>
+        
+        <div class="test-section">
+            <h2>1. Sélectionnez un client à tester <span class="status testing">En test</span></h2>
+            
+            <div class="client-selector">
+                <div class="client-card active" data-client="client_demo" onclick="selectClient('client_demo')">
+                    <h3>Client Démo</h3>
+                    <p>Services digitaux - Gemini</p>
+                </div>
+                
+                <div class="client-card" data-client="client_immobilier" onclick="selectClient('client_immobilier')">
+                    <h3>Agence Immobilière</h3>
+                    <p>Immobilier premium - OpenRouter</p>
+                </div>
+                
+                <div class="client-card" data-client="client_formation" onclick="selectClient('client_formation')">
+                    <h3>Centre Formation</h3>
+                    <p>Formation pro - Gemini</p>
+                </div>
+                
+                <div class="client-card" data-client="client_saas" onclick="selectClient('client_saas')">
+                    <h3>SaaS B2B</h3>
+                    <p>Solution SaaS - Groq</p>
+                </div>
+            </div>
+            
+            <div class="test-info">
+                <h3>📋 Instructions de test</h3>
+                <ul>
+                    <li>Cliquez sur un client ci-dessus pour le sélectionner</li>
+                    <li>Le widget apparaîtra en bas à droite de l'écran</li>
+                    <li>Testez différentes conversations : posez des questions, donnez des informations</li>
+                    <li>Vérifiez que le widget répond avec le bon persona</li>
+                    <li>Testez la qualification : mentionnez un budget, un projet, des coordonnées</li>
+                    <li>Consultez la base de données leads.db pour vérifier l'enregistrement</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>2. Test API direct</h2>
+            
+            <div class="api-test">
+                <h3>Tester l'endpoint /api/widget/chat</h3>
+                <p style="margin-bottom: 15px; color: #555;">Cliquez pour envoyer une requête test à l'API</p>
+                <button onclick="testAPI()">🚀 Envoyer requête test</button>
+                <div id="api-response" class="api-response" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>3. Code d'intégration</h2>
+            <p style="color: #666; margin-bottom: 15px;">Copiez ce code pour intégrer le widget sur votre site :</p>
+            <div class="code-block">
+&lt;script src="https://odysseus.cooligital.africa/static/widget.js" 
+        data-client-id="client_demo"&gt;&lt;/script&gt;
+            </div>
+            <p style="color: #666; margin-top: 15px; font-size: 14px;">
+                Remplacez <code>client_demo</code> par l'ID du client souhaité
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Odysseus - Agent Commercial IA | Test en cours</p>
+        </div>
+    </div>
+    
+    <!-- Widget Odysseus - Sera injecté dynamiquement -->
+    <script>
+        let currentClient = 'client_demo';
+        
+        function selectClient(clientId) {
+            currentClient = clientId;
+            
+            // Mettre à jour l'UI
+            document.querySelectorAll('.client-card').forEach(card => {
+                card.classList.remove('active');
+            });
+            document.querySelector(`[data-client="${clientId}"]`).classList.add('active');
+            
+            // Recharger le widget avec le nouveau client
+            reloadWidget(clientId);
+            
+            console.log(`Client sélectionné: ${clientId}`);
+        }
+        
+        function reloadWidget(clientId) {
+            // Supprimer l'ancien widget s'il existe
+            const oldContainer = document.getElementById('odysseus-widget-container');
+            if (oldContainer) {
+                oldContainer.remove();
+            }
+            
+            // Supprimer l'ancien script
+            const oldScript = document.querySelector('script[data-widget="odysseus"]');
+            if (oldScript) {
+                oldScript.remove();
+            }
+            
+            // Créer et ajouter le nouveau script
+            const script = document.createElement('script');
+            script.src = '/static/widget.js';
+            script.dataset.clientId = clientId;
+            script.dataset.widget = 'odysseus';
+            document.body.appendChild(script);
+        }
+        
+        async function testAPI() {
+            const responseDiv = document.getElementById('api-response');
+            responseDiv.style.display = 'block';
+            responseDiv.textContent = 'Envoi de la requête...';
+            
+            try {
+                const response = await fetch('/api/widget/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        client_id: currentClient,
+                        message: "Bonjour, je cherche un site web pour mon entreprise. Budget environ 3000€.",
+                        session_id: null,
+                        visitor_data: {
+                            name: "Test User",
+                            email: "test@example.com"
+                        },
+                        page_url: window.location.href
+                    })
+                });
+                
+                const data = await response.json();
+                
+                responseDiv.innerHTML = `
+                    <strong>✅ Réponse reçue:</strong><br><br>
+                    <strong>Client:</strong> ${currentClient}<br>
+                    <strong>Session ID:</strong> ${data.session_id}<br>
+                    <strong>Lead ID:</strong> ${data.lead_id || 'N/A'}<br>
+                    <strong>Score qualification:</strong> ${data.qualification_score}<br>
+                    <strong>Qualifié:</strong> ${data.is_qualified ? '✅ Oui' : '❌ Non'}<br>
+                    <strong>Action suggérée:</strong> ${data.suggested_action || 'Aucune'}<br><br>
+                    <strong>Réponse de l'agent:</strong><br>
+                    ${data.response}
+                `;
+                
+            } catch (error) {
+                responseDiv.innerHTML = `<strong>❌ Erreur:</strong><br>${error.message}`;
+            }
+        }
+        
+        // Charger le widget initial
+        window.addEventListener('load', () => {
+            reloadWidget(currentClient);
+        });
+    </script>
+</body>
+</html>
