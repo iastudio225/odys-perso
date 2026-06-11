@@ -358,25 +358,46 @@ async def get_widget_config(client_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
 @router.post("/analytics")
-async def widget_analytics(event_data: dict):
+async def widget_analytics(request: Request):
     """
     Endpoint pour recevoir les événements analytics du widget
+    Accepte n'importe quelle structure JSON
     """
     try:
-        # Log l'événement (tu peux aussi le stocker en DB)
+        event_data = await request.json()
+        
+        # Log l'événement
         print(f"📊 Analytics Event: {event_data.get('event')} - Client: {event_data.get('client_id')}")
         
         # Optionnel : Stocker en DB pour analyse ultérieure
-        # conn = sqlite3.connect(str(DB_FILE))
-        # cursor = conn.cursor()
-        # cursor.execute("""
-        #     INSERT INTO analytics_events (event_type, client_id, session_id, data, timestamp)
-        #     VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
-        # """, (event_data.get('event'), event_data.get('client_id'), 
-        #       event_data.get('session_id'), json.dumps(event_data)))
-        # conn.commit()
-        # conn.close()
+        try:
+            conn = sqlite3.connect(str(DB_FILE))
+            cursor = conn.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS analytics_events (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    event_type TEXT NOT NULL,
+                    client_id TEXT,
+                    session_id TEXT,
+                    data TEXT,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            cursor.execute("""
+                INSERT INTO analytics_events (event_type, client_id, session_id, data, timestamp)
+                VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)
+            """, (
+                event_data.get('event'),
+                event_data.get('client_id'),
+                event_data.get('session_id'),
+                json.dumps(event_data)
+            ))
+            conn.commit()
+            conn.close()
+        except Exception as db_error:
+            print(f"Analytics DB error: {db_error}")
         
         return {"status": "ok"}
     except Exception as e:
