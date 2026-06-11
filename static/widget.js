@@ -8,7 +8,12 @@
     'use strict';
     
     // Configuration
-    const WIDGET_API_URL = window.ODEYSSUES_API_URL || 'https://odysseus.cooligital.africa/api/widget';
+        // Utiliser une URL relative par défaut (pour les tests locaux)
+    // En production, surcharger avec window.ODEYSSUES_API_URL ou data-api-url
+    const WIDGET_API_URL = window.ODEYSSUES_API_URL 
+    || document.currentScript?.dataset?.apiUrl 
+    || '/api/widget';  // URL relative par défaut
+
     const CLIENT_ID = document.currentScript?.dataset?.clientId || 'default';
     const WIDGET_POSITION = document.currentScript?.dataset?.position || 'bottom-right'; // bottom-right, bottom-left, embedded
     
