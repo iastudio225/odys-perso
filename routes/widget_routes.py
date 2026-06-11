@@ -22,7 +22,8 @@ router = APIRouter(
 
 # Configuration
 CONFIG_FILE = Path(__file__).parent.parent / "clients_config.json"
-DB_FILE = Path(__file__).parent.parent / "leads.db"
+# Utiliser le dossier data/ qui est monté en volume (persistant)
+DB_FILE = Path(__file__).parent.parent / "data" / "leads.db"
 
 # Modèles de données
 class WidgetMessage(BaseModel):
@@ -53,6 +54,9 @@ class ClientConfig(BaseModel):
 # Gestion de la base de données
 def init_db():
     """Initialise la base de données des leads"""
+    # S'assurer que le dossier data existe
+    DB_FILE.parent.mkdir(parents=True, exist_ok=True)
+    
     conn = sqlite3.connect(str(DB_FILE))
     cursor = conn.cursor()
     
@@ -87,6 +91,7 @@ def init_db():
     
     conn.commit()
     conn.close()
+    print(f"✅ Widget DB initialized at {DB_FILE}")
 
 def load_client_config(client_id: str) -> ClientConfig:
     """Charge la configuration d'un client"""
@@ -232,9 +237,6 @@ async def send_webhook_notification(webhook_url: str, lead_data: Dict):
     except Exception as e:
         print(f"Webhook notification failed: {e}")
 
-@router.on_event("startup")
-async def startup_event():
-    """Initialise la DB au démarrage"""
     init_db()
 
 @router.post("/chat", response_model=WidgetResponse)
