@@ -399,6 +399,7 @@ class _RevalidatingStatic(StaticFiles):
 
 
 app.mount("/static", _RevalidatingStatic(directory="static"), name="static")
+app.mount("/test", StaticFiles(directory="test", html=True), name="test")
 
 # ========= GENERATED IMAGES =========
 @app.get("/api/generated-image/{filename}")
