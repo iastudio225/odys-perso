@@ -111,7 +111,6 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 
 # Widget Agent Commercial
-from routes.widget_routes import router as widget_router
 app.include_router(widget_router)
 
 
@@ -180,7 +179,7 @@ if AUTH_ENABLED:
         "/api/version",
         "/login",
     }
-    AUTH_EXEMPT_PREFIXES = ["/static"]
+    AUTH_EXEMPT_PREFIXES = ["/static", "/api/widget"]
     # Dynamic paths whose own handler proves identity via a path-embedded
     # secret instead of the session/bearer auth. The route handler at
     # routes/task_routes.py validates the per-task `webhook_token` itself
