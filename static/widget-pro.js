@@ -4,34 +4,19 @@
  * Features: Multi-langue, Upload, Analytics, RDV, Anti-spam
  */
 
-
+(function(window, document) {
+    'use strict';
+    
     // Fonction pour injecter le CSS dynamiquement
     function injectCSS() {
-        // Vérifier si déjà injecté
         if (document.getElementById('odysseus-widget-css')) return;
         
         const link = document.createElement('link');
         link.id = 'odysseus-widget-css';
         link.rel = 'stylesheet';
-        link.href = '/static/widget-pro.css';  // Chemin vers le CSS
+        link.href = '/static/widget-pro.css';
         document.head.appendChild(link);
     }
-
-    // Appeler dans init()
-    function init() {
-        injectCSS();  // ← Ajouter ici
-        createWidget();
-        initEvents();
-        trackEvent('widget_loaded');
-        console.log('✅ Odysseus Widget Pro initialized');
-    }
-
-
-
-
-
-(function(window, document) {
-    'use strict';
     
     // Configuration
     const CONFIG = {
@@ -44,9 +29,9 @@
         ENABLE_ANALYTICS: document.currentScript?.dataset?.analytics !== 'false',
         ENABLE_UPLOAD: document.currentScript?.dataset?.upload === 'true',
         ENABLE_BOOKING: document.currentScript?.dataset?.booking === 'true',
-        MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+        MAX_FILE_SIZE: 5 * 1024 * 1024,
         ALLOWED_FILES: ['image/*', 'application/pdf'],
-        RATE_LIMIT: 10, // messages par minute
+        RATE_LIMIT: 10,
         ANIMATION_SPEED: 300
     };
     
@@ -119,19 +104,16 @@
         }
     };
     
-    // Détection automatique de la langue
     function detectLanguage() {
         if (CONFIG.LANGUAGE !== 'auto') return CONFIG.LANGUAGE;
         const browserLang = navigator.language.slice(0, 2);
         return I18N[browserLang] ? browserLang : 'fr';
     }
     
-    // Traduction
     function t(key) {
         return I18N[state.language][key] || I18N.fr[key];
     }
     
-    // Analytics
     function trackEvent(event, data = {}) {
         if (!CONFIG.ENABLE_ANALYTICS) return;
         
@@ -144,12 +126,10 @@
             ...data
         };
         
-        // Envoi en background (ne bloque pas)
         navigator.sendBeacon?.(`${CONFIG.API_URL}/analytics`, JSON.stringify(eventData));
         console.log('📊 Analytics:', eventData);
     }
     
-    // Rate limiting
     function checkRateLimit() {
         const now = Date.now();
         if (now - state.lastMessageTime < 60000) {
@@ -164,14 +144,12 @@
         return true;
     }
     
-    // Création du HTML du widget
     function createWidget() {
         state.language = detectLanguage();
         const texts = I18N[state.language];
         
         const widgetHTML = `
             <div id="odysseus-widget-container" class="odysseus-widget odysseus-widget-${CONFIG.POSITION}">
-                <!-- Bouton flottant -->
                 <button id="odysseus-widget-toggle" class="odysseus-widget-toggle" aria-label="${texts.send}">
                     <svg class="odysseus-icon-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -179,9 +157,7 @@
                     <span id="odysseus-notification-badge" class="odysseus-notification-badge" style="display: none;">1</span>
                 </button>
                 
-                <!-- Fenêtre de chat -->
                 <div id="odysseus-widget-window" class="odysseus-widget-window">
-                    <!-- Header -->
                     <div class="odysseus-widget-header">
                         <div class="odysseus-widget-header-info">
                             <div class="odysseus-widget-avatar">
@@ -190,7 +166,7 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="odysseus-widget-title">Assistant Virtual</h3>
+                                <h3 class="odysseus-widget-title">Assistant Virtuel</h3>
                                 <span class="odysseus-widget-status">En ligne</span>
                             </div>
                         </div>
@@ -214,7 +190,6 @@
                         </div>
                     </div>
                     
-                    <!-- Messages -->
                     <div id="odysseus-messages" class="odysseus-messages">
                         <div class="odysseus-message bot">
                             <div class="odysseus-message-avatar">
@@ -228,7 +203,6 @@
                         </div>
                     </div>
                     
-                    <!-- Input zone -->
                     <div class="odysseus-widget-input-container">
                         ${CONFIG.ENABLE_UPLOAD ? `
                             <div class="odysseus-upload-wrapper">
@@ -259,13 +233,11 @@
                         </button>
                     </div>
                     
-                    <!-- Footer -->
                     <div class="odysseus-widget-footer">
                         <span>${texts.poweredBy}</span>
                     </div>
                 </div>
                 
-                <!-- Modal Booking -->
                 ${CONFIG.ENABLE_BOOKING ? `
                     <div id="odysseus-booking-modal" class="odysseus-modal" style="display: none;">
                         <div class="odysseus-modal-content">
@@ -286,7 +258,6 @@
         document.body.insertAdjacentHTML('beforeend', widgetHTML);
     }
     
-    // Initialisation des événements
     function initEvents() {
         const toggleBtn = document.getElementById('odysseus-widget-toggle');
         const closeBtn = document.getElementById('odysseus-close-btn');
@@ -295,7 +266,6 @@
         const input = document.getElementById('odysseus-input');
         const messages = document.getElementById('odysseus-messages');
         
-        // Toggle widget
         toggleBtn.addEventListener('click', () => {
             state.isOpen = !state.isOpen;
             windowEl.classList.toggle('odysseus-open', state.isOpen);
@@ -309,7 +279,6 @@
             }
         });
         
-        // Close button
         closeBtn.addEventListener('click', () => {
             state.isOpen = false;
             windowEl.classList.remove('odysseus-open');
@@ -317,26 +286,21 @@
             trackEvent('widget_closed');
         });
         
-        // Send message
         async function sendMessage() {
             const message = input.value.trim();
             if (!message) return;
             
-            // Rate limiting
             if (!checkRateLimit()) {
                 addMessage(t('rateLimit'), 'error');
                 trackEvent('rate_limit_exceeded');
                 return;
             }
             
-            // Add user message
             addMessage(message, 'user');
             input.value = '';
             
-            // Track
             trackEvent('message_sent', { message_length: message.length });
             
-            // Show typing indicator
             showTyping();
             
             try {
@@ -358,14 +322,11 @@
                 
                 const data = await response.json();
                 
-                // Save session
                 state.sessionId = data.session_id;
                 if (data.lead_id) state.leadId = data.lead_id;
                 
-                // Add bot response
                 addMessage(data.response, 'bot');
                 
-                // Track qualification
                 if (data.is_qualified) {
                     trackEvent('lead_qualified', {
                         score: data.qualification_score,
@@ -385,7 +346,6 @@
             if (e.key === 'Enter') sendMessage();
         });
         
-        // File upload
         if (CONFIG.ENABLE_UPLOAD) {
             const uploadBtn = document.getElementById('odysseus-upload-btn');
             const fileInput = document.getElementById('odysseus-file-input');
@@ -396,7 +356,6 @@
                 const file = e.target.files[0];
                 if (!file) return;
                 
-                // Validation
                 if (file.size > CONFIG.MAX_FILE_SIZE) {
                     alert(t('fileTooLarge'));
                     trackEvent('upload_error', { reason: 'file_too_large' });
@@ -416,12 +375,10 @@
                     return;
                 }
                 
-                // Upload logic here
                 trackEvent('file_uploaded', { filename: file.name, size: file.size });
             });
         }
         
-        // Booking modal
         if (CONFIG.ENABLE_BOOKING) {
             const bookingBtn = document.getElementById('odysseus-booking-btn');
             const modal = document.getElementById('odysseus-booking-modal');
@@ -442,7 +399,6 @@
         }
     }
     
-    // Ajouter un message
     function addMessage(text, sender) {
         const messages = document.getElementById('odysseus-messages');
         const messageDiv = document.createElement('div');
@@ -462,18 +418,15 @@
         messages.appendChild(messageDiv);
         messages.scrollTop = messages.scrollHeight;
         
-        // Notification sound
         if (sender === 'bot' && CONFIG.ENABLE_SOUND && state.isOpen) {
             playNotificationSound();
         }
         
-        // Update badge
         if (!state.isOpen && sender === 'bot') {
             updateNotificationBadge();
         }
     }
     
-    // Helpers
     function showTyping() {
         const messages = document.getElementById('odysseus-messages');
         const typingDiv = document.createElement('div');
@@ -507,7 +460,6 @@
     }
     
     function playNotificationSound() {
-        // Son simple (beep)
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gainNode = audioContext.createGain();
@@ -534,6 +486,7 @@
     
     // Init
     function init() {
+        injectCSS();  // ← Injection du CSS ici
         createWidget();
         initEvents();
         trackEvent('widget_loaded');
